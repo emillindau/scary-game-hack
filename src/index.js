@@ -116,13 +116,13 @@ function create() {
     child.setBounce(Phaser.Math.FloatBetween(0.5, 0.9));
     child.setCollideWorldBounds(true);
   });
-  
+
   zombies = this.physics.add.group({
-    key: 'zombie',
+    key: "zombie",
     repeat: 4,
-    setXY: { x: 64, y 16, stepX: 128 }
+    setXY: { x: 64, y: 16, stepX: 128 }
   });
-  
+
   zombies.children.iterate(child => {
     child.setBounce(0);
     child.setCollideWorldBounds(true);
