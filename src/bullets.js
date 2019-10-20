@@ -8,7 +8,7 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
     this.body.allowGravity = false;
     this.setActive(true);
     this.setVisible(true);
-    this.setVelocityX(200);
+    this.setVelocityX(2);
     this.setCollideWorldBounds(false);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
