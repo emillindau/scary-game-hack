@@ -5,10 +5,12 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
 
   fire(x, y) {
     this.body.reset(x, y);
-    this.body.allowGravity = false;
+    this.body.setAllowGravity(false);
+    this.body.customBoundsRectangle = new Phaser.Geom.Rectangle(0, 0, 4, 4);
+    this.body.setBoundsRectangle(new Phaser.Geom.Rectangle(0, 0, 4, 4));
     this.setActive(true);
     this.setVisible(true);
-    this.setVelocityX(2);
+    this.setVelocityX(20);
     this.setCollideWorldBounds(false);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
@@ -37,22 +39,11 @@ class Bullets extends Phaser.Physics.Arcade.Group {
     });
   }
 
-  fireBullet(x, y, zombies, hitCb, scene) {
+  fireBullet(x, y) {
     let bullet = this.getFirstDead(false);
 
     if (bullet) {
       bullet.fire(x, y);
-
-      scene.physics.add.collider(bullet, zombies);
-      scene.physics.add.overlap(
-        bullet,
-        zombies,
-        function() {
-          console.log("hit!");
-        },
-        null,
-        this
-      );
     }
   }
 }

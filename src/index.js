@@ -9,6 +9,7 @@ import levelTiles from "./assets/tiled/tiles.png";
 import coinImg from "./assets/coin.png";
 import zombieImg from "./assets/zombie.png";
 import bulletImg from "./assets/bullet.png";
+import explosionImg from "./assets/explosion.png";
 
 const config = {
   type: Phaser.AUTO,
@@ -19,7 +20,7 @@ const config = {
     default: "arcade",
     arcade: {
       gravity: { y: 800 },
-      debug: false
+      debug: true
     }
   },
   render: {
@@ -52,24 +53,18 @@ let health = 100;
 let gameOver = false;
 let spaceIsDown = false;
 
+const FRAME_DIMENSION = {
+  frameWidth: 16,
+  frameHeight: 16
+};
+
 function preload() {
   this.load.image("platform", platformImg);
-  this.load.spritesheet("player", playerImg, {
-    frameWidth: 16,
-    frameHeight: 16
-  });
-  this.load.spritesheet("bullet", bulletImg, {
-    frameWidth: 16,
-    frameHeight: 16
-  });
-  this.load.spritesheet("zombie", zombieImg, {
-    frameWidth: 16,
-    frameHeight: 16
-  });
-  this.load.spritesheet("coin", coinImg, {
-    frameWidth: 16,
-    frameHeight: 16
-  });
+  this.load.spritesheet("player", playerImg, FRAME_DIMENSION);
+  this.load.spritesheet("bullet", bulletImg, FRAME_DIMENSION);
+  this.load.spritesheet("zombie", zombieImg, FRAME_DIMENSION);
+  this.load.spritesheet("coin", coinImg, FRAME_DIMENSION);
+  this.load.spritesheet("explosion", explosionImg, FRAME_DIMENSION);
 
   this.load.tilemapTiledJSON("level", levelJson);
   this.load.image("tiles", levelTiles);
@@ -101,11 +96,14 @@ function hitByZombie(player, zombie) {
 }
 
 function zombieBitBullet(zombie, bullet) {
+  const expl = this.add.sprite(zombie.x, zombie.y, "explosion");
+  expl.anims.play("expl");
+
   zombie.disableBody(true, true);
   zombie.setActive(false);
   zombie.setVisible(false);
 
-  // bullet.disableBody(true, true);
+  bullet.disableBody(true, true);
   bullet.setActive(false);
   bullet.setVisible(false);
 }
@@ -156,6 +154,16 @@ function create() {
   zombie = this.physics.add.sprite(150, 450, "zombie");
   zombie.setBounce(0);
   zombie.setCollideWorldBounds(true);
+
+  this.anims.create({
+    key: "expl",
+    frames: this.anims.generateFrameNumbers("explosion", {
+      start: 0,
+      end: 6
+    }),
+    frameRate: 10,
+    repeat: 0
+  });
 
   this.anims.create({
     key: "swirl",
@@ -230,7 +238,8 @@ function create() {
   this.physics.add.overlap(zombie, bullets, zombieBitBullet, null, this);
 
   cursors = this.input.keyboard.createCursorKeys();
-  music.play();
+  // Music
+  // music.play();
 }
 
 function update() {
@@ -265,7 +274,7 @@ function update() {
     if (cursors.space.isDown) {
       if (!spaceIsDown) {
         spaceIsDown = true;
-        bullets.fireBullet(player.x, player.y, zombies, zombieBitBullet, this);
+        bullets.fireBullet(player.x, player.y);
       }
     }
 
