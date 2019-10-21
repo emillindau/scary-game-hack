@@ -96,10 +96,13 @@ function hitByZombie(player, zombie) {
   }
 }
 
-function zombieBitBullet(zombie, bullet) {
-  const expl = this.add.sprite(zombie.x, zombie.y, "explosion");
+function addExplosion(x, y) {
+  const expl = this.add.sprite(x, y, "explosion");
   expl.anims.play("expl");
+}
 
+function zombieBitBullet(zombie, bullet) {
+  addExplosion.call(this, zombie.x, zombie.y);
   zombie.disableBody(true, true);
   zombie.setActive(false);
   zombie.setVisible(false);
@@ -133,6 +136,8 @@ function create() {
   coins.children.iterate(child => {
     child.setBounce(Phaser.Math.FloatBetween(0.5, 0.6));
     child.setCollideWorldBounds(true);
+    child.body.offset = new Phaser.Math.Vector2(6, 12);
+    child.body.setSize(4, 4, false);
   });
 
   zombies = this.physics.add.group({
@@ -144,11 +149,13 @@ function create() {
   zombies.children.iterate(child => {
     child.setBounce(0);
     child.setCollideWorldBounds(true);
+    child.body.setSize(8, 16);
   });
 
   player = this.physics.add.sprite(100, 450, "player");
   player.setBounce(0);
   player.setCollideWorldBounds(true);
+  player.setSize(12, 16);
 
   zombie = this.physics.add.sprite(150, 450, "zombie");
   zombie.setBounce(0);
@@ -279,7 +286,12 @@ function update() {
     if (cursors.space.isDown) {
       if (!spaceIsDown) {
         spaceIsDown = true;
-        bullets.fireBullet(player.x, player.y, playerFacing);
+        bullets.fireBullet(
+          player.x,
+          player.y,
+          playerFacing,
+          addExplosion.bind(this)
+        );
       }
     }
 
