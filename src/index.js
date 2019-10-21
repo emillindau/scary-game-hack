@@ -10,6 +10,7 @@ import coinImg from "./assets/coin.png";
 import zombieImg from "./assets/zombie.png";
 import bulletImg from "./assets/bullet.png";
 import explosionImg from "./assets/explosion.png";
+import pickupImg from "./assets/pickup.png";
 
 const config = {
   type: Phaser.AUTO,
@@ -66,6 +67,7 @@ function preload() {
   this.load.spritesheet("zombie", zombieImg, FRAME_DIMENSION);
   this.load.spritesheet("coin", coinImg, FRAME_DIMENSION);
   this.load.spritesheet("explosion", explosionImg, FRAME_DIMENSION);
+  this.load.spritesheet("pickup", pickupImg, FRAME_DIMENSION);
 
   this.load.tilemapTiledJSON("level", levelJson);
   this.load.image("tiles", levelTiles);
@@ -79,6 +81,9 @@ function collectCoin(player, coin) {
 
   score += 10;
   scoreText.setText(`score: ${score}`);
+
+  const pickup = this.add.sprite(coin.x, coin.y, "pickup");
+  pickup.anims.play("pickup");
 }
 
 function hitByZombie(player, zombie) {
@@ -166,6 +171,16 @@ function create() {
     frames: this.anims.generateFrameNumbers("explosion", {
       start: 0,
       end: 6
+    }),
+    frameRate: 10,
+    repeat: 0
+  });
+
+  this.anims.create({
+    key: "pickup",
+    frames: this.anims.generateFrameNumbers("pickup", {
+      start: 0,
+      end: 4
     }),
     frameRate: 10,
     repeat: 0
