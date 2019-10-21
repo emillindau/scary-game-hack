@@ -36,6 +36,7 @@ const config = {
 const game = new Phaser.Game(config);
 let platforms = null;
 let player = null;
+let playerFacing = 1;
 let coins = null;
 let cursors = null;
 let level = null;
@@ -103,9 +104,7 @@ function zombieBitBullet(zombie, bullet) {
   zombie.setActive(false);
   zombie.setVisible(false);
 
-  bullet.disableBody(true, true);
-  bullet.setActive(false);
-  bullet.setVisible(false);
+  bullet.dead();
 }
 
 function create() {
@@ -243,6 +242,12 @@ function create() {
 }
 
 function update() {
+  if (player.body.velocity.x > 0) {
+    playerFacing = 1;
+  } else if (player.body.velocity.x < 0) {
+    playerFacing = -1;
+  }
+
   coins.children.iterate(child => {
     child.anims.play("rotate", true);
   });
@@ -274,7 +279,7 @@ function update() {
     if (cursors.space.isDown) {
       if (!spaceIsDown) {
         spaceIsDown = true;
-        bullets.fireBullet(player.x, player.y);
+        bullets.fireBullet(player.x, player.y, playerFacing);
       }
     }
 

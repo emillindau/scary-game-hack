@@ -1,27 +1,32 @@
 class Bullet extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
     super(scene, x, y, "bullet");
+    this.bulletSpeed = 150;
   }
 
-  fire(x, y) {
+  fire(x, y, facing) {
     this.body.reset(x, y);
     this.body.setAllowGravity(false);
-    this.body.customBoundsRectangle = new Phaser.Geom.Rectangle(0, 0, 4, 4);
-    this.body.setBoundsRectangle(new Phaser.Geom.Rectangle(0, 0, 4, 4));
+    this.body.setSize(6, 4);
     this.setActive(true);
     this.setVisible(true);
-    this.setVelocityX(20);
+    this.setVelocityX(this.bulletSpeed * facing);
     this.setCollideWorldBounds(false);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
   }
 
+  dead() {
+    this.disableBody(true, true);
+    this.setActive(false);
+    this.setVisible(false);
+  }
+
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
 
-    if (this.x <= 0 || this.x >= 512) {
-      this.setActive(false);
-      this.setVisible(false);
+    if (this.x <= 0 || this.x >= 1536) {
+      this.dead();
     }
   }
 }
@@ -39,11 +44,11 @@ class Bullets extends Phaser.Physics.Arcade.Group {
     });
   }
 
-  fireBullet(x, y) {
+  fireBullet(x, y, facing) {
     let bullet = this.getFirstDead(false);
 
     if (bullet) {
-      bullet.fire(x, y);
+      bullet.fire(x, y, facing);
     }
   }
 }
